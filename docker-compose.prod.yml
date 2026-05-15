@@ -1,0 +1,47 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: anhth09/demo-frontend:v1.0.0
+    ports:
+      - "80:80"
+    environment:
+      # Cần cấu hình lại URL cho production. Bạn có thể dùng biến môi trường hoặc hardcode.
+      VITE_API_URL: ${VITE_API_URL}
+    depends_on:
+      - backend
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: anhth09/demo-backend:v1.0.0
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_prod:
