@@ -1,9 +1,6 @@
 services:
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
     image: anhth09/demo-frontend:v1.0.0
     ports:
       - "80:80"
@@ -15,9 +12,6 @@ services:
     restart: always
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
     image: anhth09/demo-backend:v1.0.0
     ports:
       - "3000:3000"
